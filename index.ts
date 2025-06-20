@@ -1,8 +1,8 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject, generateText } from "ai";
-import z from "zod";
 import { leadAgent } from "./agents/lead.ts";
 import { subAgent } from "./agents/sub.ts";
+
 const GEMINI_KEY = Bun.env.GEMINI_KEY;
 
 if (!GEMINI_KEY) {
@@ -15,7 +15,8 @@ const google = createGoogleGenerativeAI({
 
 const model = google("gemini-2.5-flash");
 
-const question = "What is the history of the guitar?";
+const question =
+  "Create a evening study for my bible study group on the topic of 'The power of prayer'";
 console.log(`Question: ${question}`);
 console.log("Making a plan...");
 const plan = await leadAgent(question, model);
@@ -52,13 +53,12 @@ ${subagent.guidance}
 ${subagent.taskBoundaries}
 ## Results
 ${results[0]?.answer || "No results found."}
-## Steps taken:
-${results[0]?.steps
-  .map(
-    (step) =>
-      `- ${step.step}\n  - result: ${step.result}\n  - sources: ${step.sources}`
-  )
-  .join("\n")}
+## sources
+${
+  results[index]?.sources
+    ? results[index].sources.map((source) => `- ${source}`).join("\n")
+    : "No sources found."
+}
 `
   )
   .join("\n\n")}
